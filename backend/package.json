@@ -1,0 +1,16 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Данный проект является api для регистрации на standup",
+  "main": "index.js",
+  "scripts": {
+    "start" : "node index",
+    "dev" : "nodemon index.js"
+  },
+  "type": "module",
+  "author": "Alex Ignat ignatyevaleksandr.1992@gmail.ru",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
