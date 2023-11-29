@@ -1,5 +1,6 @@
 import http from "node:http";
 import fs from 'node:fs/promises';
+import { log } from "node:console";
 
 const PORT = 8080;
 const COMEDIANS = "./comedians.json";
@@ -18,9 +19,25 @@ const checkFiles = async () => {
     } catch (error) {
         await fs.writeFile(CLIENTS, JSON.stringify([]));
         console.log(`Файл ${CLIENTS} был создан!`);
+        return false;
     }
 
     return true;
+}
+
+const sendData = function(res, data) {
+    res.writeHead(200, {
+        "Content-Type": "text/json; charset=utf-8",
+    });
+
+    res.end(data);
+}
+
+const sendError = function(res, status, error) {
+    res.writeHead(status, {
+        "Content-Type": "text/plain; charset=utf-8",
+    });
+    res.end(error);
 }
 
 const startServer = async () => {
@@ -29,14 +46,27 @@ const startServer = async () => {
     }
     http
         .createServer(async (req, res) => {
-            if (req.method === "GET" && req.url === "/comedians") {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            const segment = req.url.split('/').filter(Boolean);
+
+            if (req.method === "GET" && segment[0] === "comedians") {
                 try {
-                    const data = await fs.readFile("comedians.json", "utf-8")
-                    res.writeHead(200, {
-                        "Content-Type": "text/json; charset=utf-8",
-                        "Access-Control-Allow-Origin": "*",
-                    });
-                    res.end(data);
+                    const data = JSON.parse(await fs.readFile("comedians.json", "utf-8"));
+
+                    if (segment.length === 2) {
+                        const comedian = data.filter(c => c.id === segment[1]);
+
+                        if (!comedian) {
+                            sendError(res, 404, "Stand up комик не найден");
+                            
+                            return;
+                        }
+
+                        sendData(res, JSON.stringify(comedian));
+                        return;
+                    }
+                    sendData(res, JSON.stringify(comedian));
+                    return;
                 } catch (error) {
                     res.writeHead(500, {
                         "Content-Type": "text/plain; charset=utf-8",
@@ -52,6 +82,7 @@ const startServer = async () => {
             }
         })
         .listen(PORT);
+        console.log('Сервер запущен');       
 }
 
 startServer()
