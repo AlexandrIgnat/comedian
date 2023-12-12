@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import { sendData, sendError } from "./modules/send.js";
 import { checkFile } from "./modules/checkFile.js";
 import { handleComediansRequest } from "./modules/handleComediansRequest.js";
+import { handleAddClient } from "./modules/handleAddClient.js";
 
 const PORT = 8080;
 const COMEDIANS = "./comedians.json";
@@ -27,6 +28,12 @@ const startServer = async () => {
                     return;
                 }
                 
+                if (req.method === "POST" && segment[0] === "clients") {
+                    handleAddClient(req, res);
+                    
+                    return;
+                }
+
                 sendError(res, 404, "Not found");
             } catch (error) {
                 sendError(res, 500, `Ошибка сервера ${error}`)
