@@ -20,17 +20,30 @@ const startServer = async () => {
         .createServer(async (req, res) => {
             try {
                 res.setHeader("Access-Control-Allow-Origin", "*");
-                const segment = req.url.split('/').filter(Boolean);
+                const segments = req.url.split('/').filter(Boolean);
 
-                if (req.method === "GET" && segment[0] === "comedians") {
-                    handleComediansRequest(req, res, comedians, segment);
+                if (req.method === "GET" && segments[0] === "comedians") {
+                    handleComediansRequest(req, res, comedians, segments);
                     
                     return;
                 }
                 
-                if (req.method === "POST" && segment[0] === "clients") {
+                if (req.method === "POST" && segments[0] === "clients") {
                     handleAddClient(req, res);
                     
+                    return;
+                }
+
+                if (req.method === "GET" && segments[0] === "clients" && segments.length === 2) {
+                    const ticket = segments[1];
+                    handleAddClient(req, res, ticket);
+                    
+                    return; 
+                }
+
+                if(req.method === "PATCH" && segments[0] === "clients" && segments.length === 2) {
+                    handleUpdateClient(req, res, segments);
+
                     return;
                 }
 
@@ -40,7 +53,7 @@ const startServer = async () => {
             }
         })
         .listen(PORT);
-        console.log('Сервер запущен');       
+        console.log('Сервер запущен');    
 }
 
 startServer()
