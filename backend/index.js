@@ -7,7 +7,7 @@ import { handleAddClient } from "./modules/handleAddClient.js";
 
 const PORT = 8080;
 const COMEDIANS = "./comedians.json";
-const CLIENTS = "./clients.json";
+export const CLIENTS = "./clients.json";
 
 const startServer = async () => {
     if (!(await checkFile(COMEDIANS))) {
@@ -49,11 +49,11 @@ const startServer = async () => {
 
                 sendError(res, 404, "Not found");
             } catch (error) {
-                sendError(res, 500, `Ошибка сервера ${error}`)
+                sendError(res, 500, `Ошибка сервера ${error}`);
             }
         })
         .listen(PORT);
         console.log('Сервер запущен');    
 }
 
-startServer()
+startServer();
